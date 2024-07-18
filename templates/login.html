@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
+        .card {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ccc;
+            border: none;
+            margin: 0 5px;
+            cursor: pointer;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-group {
+            margin-bottom: 20px; /* Add space between form groups */
+        }
+        .btn-block {
+            margin-top: 20px; /* Add space above the button */
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="text-center">Login</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">Username:</label>
+                    <input type="text" name="username" class="form-control" id="id_username" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Password:</label>
+                    <input type="password" name="password" class="form-control" id="id_password" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </div>
+            </form>
+            <div class="text-center">
+                <a href="{% url 'register' %}">회원가입</a> <!-- 회원가입 링크 추가 -->
+            </div>
+            <div class="icon-container">
+                <button class="icon-button"></button>
+                <button class="icon-button"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/mdb.es.min.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ item.title }}</title>
+    <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_api_key }}"></script>
+    <style>
+        .content-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 20px; /* Title과 박스 사이의 간격 조정 */
+        }
+        .box {
+            width: 49%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        #map {
+            height: 400px;
+        }
+        .image-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .infowindow-content {
+            padding: 10px;
+            word-wrap: break-word; 
+            max-width: 250px; 
+            white-space: normal;
+            overflow: auto; 
+            box-sizing: border-box; 
+        }
+        @media (max-width: 768px) {
+            .box {
+                width: 100%;
+                height: 300px;
+            }
+            .content-container {
+                flex-direction: column;
+            }
+        }
+        .title-style {
+            font-size: 1.5rem; /* Adjust the size as needed */
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center title-style">{{ item.title }}</h1>
+        <div class="content-container">
+            <div class="box image-container">
+                <img src="{{ item.firstimage }}" alt="{{ item.title }}">
+            </div>
+            <div class="box" id="map"></div>
+        </div>
+        <p>주소: {{ item.addr1 }}</p>
+
+        <!-- 채팅 섹션 -->
+        <div class="card">
+            <div class="card-header">소통 공간</div>
+            <div class="card-body">
+                <div id="chat-box" style="height: 300px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
+                    <!-- 메시지들이 여기에 추가될 것입니다 -->
+                </div>
+                <div class="input-group">
+                    <input type="text" id="chat-input" class="form-control" placeholder="메시지를 입력하세요">
+                    <button id="send-btn" class="btn btn-primary">전송</button>
+                </div>
+            </div>
+        </div>
+        <a href="{% url 'index' %}" class="btn btn-secondary mt-3">Back to Home</a>
+    </div>
+    <script src="{% static 'js/mdb.umd.min.js' %}"></script>
+    <script>
+        // 템플릿 변수를 JSON으로 인코딩하여 JavaScript에서 안전하게 파싱
+        var mapData = JSON.parse('{{ item.mapx|escapejs }}');
+        var mapy = JSON.parse('{{ item.mapy|escapejs }}');
+
+        // 카카오 지도 API 설정
+        var mapContainer = document.getElementById('map');
+        var mapOption = {
+            center: new kakao.maps.LatLng(mapy, mapData), // 좌표 설정
+            level: 3 // 지도의 확대 레벨
+        };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 마커 설정
+        var markerPosition = new kakao.maps.LatLng(mapy, mapData);
+        var marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+        marker.setMap(map);
+
+        // 인포윈도우 설정
+        var infowindow = new kakao.maps.InfoWindow({
+            content: '<div class="infowindow-content">{{ item.addr1 }}</div>',
+            maxWidth: 250 // Adjust the width as needed
+        });
+
+        // 마커 클릭 상태 추적
+        var infowindowOpen = false;
+
+        // 마커에 클릭 이벤트 등록
+        kakao.maps.event.addListener(marker, 'click', function() {
+            if (infowindowOpen) {
+                infowindow.close();
+                infowindowOpen = false;
+            } else {
+                infowindow.open(map, marker);
+                infowindowOpen = true;
+            }
+        });
+
+        // WebSocket 설정
+        const roomName = encodeURIComponent("{{ item.title }}");
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+
+        chatSocket.onopen = function(e) {
+            console.log('WebSocket connection opened');
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            addMessage(data.message, data.nickname, 'server');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.log('WebSocket connection closed');
+        };
+
+        chatSocket.onerror = function(error) {
+            console.log('WebSocket error: ', error);
+        };
+
+        function addMessage(message, nickname, sender='user') {
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.innerHTML = `<strong>${nickname}:</strong> ${message}`;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById('send-btn').addEventListener('click', function() {
+            const chatInput = document.getElementById('chat-input');
+            const message = chatInput.value.trim();
+            if (message) {
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'nickname': '{{ request.user.nickname }}'
+                }));
+                chatInput.value = '';
+            }
+        });
+
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('send-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
