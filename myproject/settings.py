@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'account',
         'USER': 'chang',
-        'PASSWORD': '2501',
+        'PASSWORD': 'Rkswl159!',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -141,6 +141,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
