@@ -40,15 +40,6 @@
     <!-- Main Layout -->
     <main class="my-5">
         <div class="container">
-            <!-- Search Form -->
-            <form method="get" action="">
-                <div class="input-group mb-3" style=" padding-top:25px; padding-bottom:10px;">
-                    <input type="text" class="form-control" name="search" placeholder="검색어를 입력하세요" value="{{ search_query }}">
-                    <input type="hidden" name="mapx" value="{{ current_mapx }}">
-                    <input type="hidden" name="mapy" value="{{ current_mapy }}">
-                    <button class="btn btn-outline-secondary" type="submit">검색</button>
-                </div>
-            </form>
             <!-- Section: Content -->
             <section class="text-center">
                 <h4 class="custom-margin-top" style="margin-bottom: 25px; margin-top: 20px;"><strong>현재 근처 관광지</strong></h4>
@@ -111,6 +102,31 @@
     <!-- Footer -->
     <!-- MDB -->
     <script src="{% static 'js/mdb.umd.min.js' %}"></script>
-    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('mapx') || !urlParams.has('mapy')) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var mapx = position.coords.longitude;
+                        var mapy = position.coords.latitude;
+                        window.location.href = window.location.pathname + "?mapx=" + mapx + "&mapy=" + mapy;
+                    }, function(error) {
+                        console.log("Error getting location: " + error.message);
+                        // 기본 위치 설정 (예: 서울의 위도와 경도)
+                        var mapx = 126.9780;
+                        var mapy = 37.5665;
+                        window.location.href = window.location.pathname + "?mapx=" + mapx + "&mapy=" + mapy;
+                    });
+                } else {
+                    console.log("Geolocation is not supported by this browser.");
+                    // 기본 위치 설정 (예: 서울의 위도와 경도)
+                    var mapx = 126.9780;
+                    var mapy = 37.5665;
+                    window.location.href = window.location.pathname + "?mapx=" + mapx + "&mapy=" + mapy;
+                }
+            }
+        });
+    </script>
 </body>
 </html>
