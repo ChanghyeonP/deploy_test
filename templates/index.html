@@ -40,6 +40,14 @@
     <!-- Main Layout -->
     <main class="my-5">
         <div class="container">
+            <form method="get" action="">
+                <div class="input-group mb-3" style=" padding-top:25px; padding-bottom:10px;">
+                    <input type="text" class="form-control" name="search" placeholder="검색어를 입력하세요" value="{{ search_query }}">
+                    <input type="hidden" name="mapx" value="{{ current_mapx }}">
+                    <input type="hidden" name="mapy" value="{{ current_mapy }}">
+                    <button class="btn btn-outline-secondary" type="submit">검색</button>
+                </div>
+            </form>
             <!-- Section: Content -->
             <section class="text-center">
                 <h4 class="custom-margin-top" style="margin-bottom: 25px; margin-top: 20px;"><strong>현재 근처 관광지</strong></h4>
