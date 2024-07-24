@@ -22,8 +22,8 @@ CSRF_COOKIE_SECURE = True  # HTTPS를 사용하는 경우 True
 SESSION_COOKIE_SECURE = True  # HTTPS를 사용하는 경우 True
 
 # CSRF 쿠키 관련 추가 설정
-CSRF_COOKIE_HTTPONLY = False  # CSRF 쿠키는 JavaScript에서 접근 불가
-CSRF_USE_SESSIONS = False  # 세션을 사용한 CSRF 검증 비활성화
+CSRF_COOKIE_HTTPONLY = True  # CSRF 쿠키는 JavaScript에서 접근 불가
+CSRF_USE_SESSIONS = True  # 세션을 사용한 CSRF 검증 비활성화
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'myapp',
     'detail_page',
     'account',
+    'channels',
 ]
 
 ASGI_APPLICATION = 'myproject.asgi.application'
@@ -42,7 +43,10 @@ ASGI_APPLICATION = 'myproject.asgi.application'
 # Channels 설정
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+	'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+   	 },
     },
 }
 

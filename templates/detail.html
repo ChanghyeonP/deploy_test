@@ -7,7 +7,6 @@
     <title>{{ item.title }}</title>
     <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_api_key }}"></script>
     <style>
         .content-container {
             display: flex;
@@ -87,49 +86,60 @@
     <script src="{% static 'js/mdb.umd.min.js' %}"></script>
     <script>
         // 템플릿 변수를 JSON으로 인코딩하여 JavaScript에서 안전하게 파싱
-        var mapData = JSON.parse('{{ item.mapx|escapejs }}');
-        var mapy = JSON.parse('{{ item.mapy|escapejs }}');
+        var mapData = parseFloat('{{ item.mapx|escapejs }}');
+        var mapy = parseFloat('{{ item.mapy|escapejs }}');
 
-        // 카카오 지도 API 설정
-        var mapContainer = document.getElementById('map');
-        var mapOption = {
-            center: new kakao.maps.LatLng(mapy, mapData), // 좌표 설정
-            level: 3 // 지도의 확대 레벨
-        };
+        // Kakao 지도 API 스크립트를 비동기로 로드
+        function loadKakaoMap() {
+            var script = document.createElement('script');
+            script.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_api_key }}&autoload=false";
+            script.onload = function() {
+                kakao.maps.load(function() {
+                    // 카카오 지도 API 설정
+                    var mapContainer = document.getElementById('map');
+                    var mapOption = {
+                        center: new kakao.maps.LatLng(mapy, mapData), // 좌표 설정
+                        level: 3 // 지도의 확대 레벨
+                    };
+                    var map = new kakao.maps.Map(mapContainer, mapOption);
 
-        var map = new kakao.maps.Map(mapContainer, mapOption);
+                    // 마커 설정
+                    var markerPosition = new kakao.maps.LatLng(mapy, mapData);
+                    var marker = new kakao.maps.Marker({
+                        position: markerPosition
+                    });
+                    marker.setMap(map);
 
-        // 마커 설정
-        var markerPosition = new kakao.maps.LatLng(mapy, mapData);
-        var marker = new kakao.maps.Marker({
-            position: markerPosition
-        });
-        marker.setMap(map);
+                    // 인포윈도우 설정
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div class="infowindow-content">{{ item.addr1 }}</div>',
+                        maxWidth: 250 // Adjust the width as needed
+                    });
 
-        // 인포윈도우 설정
-        var infowindow = new kakao.maps.InfoWindow({
-            content: '<div class="infowindow-content">{{ item.addr1 }}</div>',
-            maxWidth: 250 // Adjust the width as needed
-        });
+                    // 마커 클릭 상태 추적
+                    var infowindowOpen = false;
 
-        // 마커 클릭 상태 추적
-        var infowindowOpen = false;
+                    // 마커에 클릭 이벤트 등록
+                    kakao.maps.event.addListener(marker, 'click', function() {
+                        if (infowindowOpen) {
+                            infowindow.close();
+                            infowindowOpen = false;
+                        } else {
+                            infowindow.open(map, marker);
+                            infowindowOpen = true;
+                        }
+                    });
+                });
+            };
+            document.head.appendChild(script);
+        }
 
-        // 마커에 클릭 이벤트 등록
-        kakao.maps.event.addListener(marker, 'click', function() {
-            if (infowindowOpen) {
-                infowindow.close();
-                infowindowOpen = false;
-            } else {
-                infowindow.open(map, marker);
-                infowindowOpen = true;
-            }
-        });
+        loadKakaoMap();
 
         // WebSocket 설정
         const roomName = encodeURIComponent("{{ item.title }}");
         const chatSocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+            'wss://' + window.location.host + '/ws/chat/' + roomName + '/'
         );
 
         chatSocket.onopen = function(e) {
@@ -161,12 +171,14 @@
         document.getElementById('send-btn').addEventListener('click', function() {
             const chatInput = document.getElementById('chat-input');
             const message = chatInput.value.trim();
-            if (message) {
+            if (message && chatSocket.readyState === WebSocket.OPEN) {
                 chatSocket.send(JSON.stringify({
                     'message': message,
                     'nickname': '{{ request.user.nickname }}'
                 }));
                 chatInput.value = '';
+            } else {
+                console.error('WebSocket is not open. Unable to send message.');
             }
         });
 
