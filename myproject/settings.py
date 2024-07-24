@@ -13,12 +13,17 @@ SECRET_KEY = 'django-insecure-@1lo*@^rb7!gzisk+end#+)@rp9s%p4ozvjvm$6#ed-^&93fnl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['nurigo.site', 'www.nurigo.site']
 
-CSRF_TRUSTED_ORIGINS = ['https://4433-180-189-105-254.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://nurigo.site', 'http://nurigo.site']
 
+# HTTPS를 사용하는 경우에만 설정
+CSRF_COOKIE_SECURE = True  # HTTPS를 사용하는 경우 True
+SESSION_COOKIE_SECURE = True  # HTTPS를 사용하는 경우 True
 
-# Application definition
+# CSRF 쿠키 관련 추가 설정
+CSRF_COOKIE_HTTPONLY = False  # CSRF 쿠키는 JavaScript에서 접근 불가
+CSRF_USE_SESSIONS = False  # 세션을 사용한 CSRF 검증 비활성화
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -64,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+		'django.template.context_processors.csrf',
             ],
         },
     },
@@ -79,7 +85,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'account',
-        'USER': 'changtest',
+        'USER': 'chang',
         'PASSWORD': 'Rkswl159!',
         'HOST': 'localhost',
         'PORT': '3306',
