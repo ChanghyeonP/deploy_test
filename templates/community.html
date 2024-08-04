@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css">
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <!-- MDB -->
+    <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container-fluid">
+            <img src="" height="16" alt="" loading="lazy" style="margin-top: -3px;">
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01"
+                aria-controls="navbarExample01" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarExample01">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item active">
+                        <a class="nav-link" aria-current="page" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'community' %}">Community</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar -->
+
+    <!-- Main Layout -->
+    <main class="my-5">
+        <div class="container">
+            <!-- 게시물 작성 폼 -->
+            <h4 class="custom-margin-top" style="margin-bottom: 25px; margin-top: 20px;"><strong>게시물 작성</strong></h4>
+            <form method="post" action="{% url 'community' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">제목</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">내용</label>
+                    <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image">이미지</label>
+                    <input type="file" class="form-control-file" id="image" name="image">
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">게시물 올리기</button>
+            </form>
+            <!-- 게시물 목록 -->
+            <h4 class="custom-margin-top" style="margin-bottom: 25px; margin-top: 20px;"><strong>게시물 목록</strong></h4>
+            <div class="row">
+                {% for post in posts %}
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <div class="card">
+                        {% if post.image %}
+                        <div class="bg-image hover-overlay img-container" data-mdb-ripple-init data-mdb-ripple-color="light">
+                            <img src="{{ post.image.url }}" class="img-fluid" />
+                            <a href="#!">
+                                <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+                            </a>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.content }}</p>
+                            <p class="card-text"><small class="text-muted">{{ post.created_at }}</small></p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+    <!-- Main Layout -->
+
+    <!-- MDB -->
+    <script type="text/javascript" src="{% static 'js/mdb.umd.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+</body>
+</html>

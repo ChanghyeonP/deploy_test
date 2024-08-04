@@ -12,7 +12,7 @@
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
-            margin-top: 20px; /* Title과 박스 사이의 간격 조정 */
+            margin-top: 20px;
         }
         .box {
             width: 49%;
@@ -36,11 +36,11 @@
         }
         .infowindow-content {
             padding: 10px;
-            word-wrap: break-word; 
-            max-width: 250px; 
+            word-wrap: break-word;
+            max-width: 250px;
             white-space: normal;
-            overflow: auto; 
-            box-sizing: border-box; 
+            overflow: auto;
+            box-sizing: border-box;
         }
         @media (max-width: 768px) {
             .box {
@@ -52,7 +52,7 @@
             }
         }
         .title-style {
-            font-size: 1.5rem; /* Adjust the size as needed */
+            font-size: 1.5rem;
             padding: 10px 20px;
         }
     </style>
@@ -77,6 +77,12 @@
                         <strong>{{ comment.nickname }}</strong> <br>
                         <small>{{ comment.created_at }}</small> <br>
                         {{ comment.text }}
+                        {% if comment.author == request.user %}
+                            <form method="post" action="{% url 'delete_comment' comment.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                            </form>
+                        {% endif %}
                     </div>
                 {% empty %}
                     <p>댓글이 없습니다.</p>
@@ -95,45 +101,38 @@
                 </form>
             </div>
         </div>
-        
+        <a href="{% url 'tourist_attraction_detail' item.contentid %}" class="btn btn-secondary mt-3">Back to Detail</a>
     </div>
     <script src="{% static 'js/mdb.es.min.js' %}"></script>
     <script>
-        // 템플릿 변수를 JSON으로 인코딩하여 JavaScript에서 안전하게 파싱
         var mapData = parseFloat('{{ item.mapx|escapejs }}');
         var mapy = parseFloat('{{ item.mapy|escapejs }}');
 
-        // Kakao 지도 API 스크립트를 비동기로 로드
         function loadKakaoMap() {
             var script = document.createElement('script');
             script.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_api_key }}&autoload=false";
             script.onload = function() {
                 kakao.maps.load(function() {
-                    // 카카오 지도 API 설정
                     var mapContainer = document.getElementById('map');
                     var mapOption = {
-                        center: new kakao.maps.LatLng(mapy, mapData), // 좌표 설정
-                        level: 3 // 지도의 확대 레벨
+                        center: new kakao.maps.LatLng(mapy, mapData),
+                        level: 3
                     };
                     var map = new kakao.maps.Map(mapContainer, mapOption);
 
-                    // 마커 설정
                     var markerPosition = new kakao.maps.LatLng(mapy, mapData);
                     var marker = new kakao.maps.Marker({
                         position: markerPosition
                     });
                     marker.setMap(map);
 
-                    // 인포윈도우 설정
                     var infowindow = new kakao.maps.InfoWindow({
                         content: '<div class="infowindow-content">{{ item.addr1 }}</div>',
-                        maxWidth: 250 // Adjust the width as needed
+                        maxWidth: 250
                     });
 
-                    // 마커 클릭 상태 추적
                     var infowindowOpen = false;
 
-                    // 마커에 클릭 이벤트 등록
                     kakao.maps.event.addListener(marker, 'click', function() {
                         if (infowindowOpen) {
                             infowindow.close();
