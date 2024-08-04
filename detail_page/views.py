@@ -1,7 +1,9 @@
 from decouple import config
 import requests
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from .models import Comment
+from .forms import CommentForm
 
 def tourist_attraction_detail(request, content_id):
     service_key = config('SERVICE_KEY')
@@ -37,9 +39,26 @@ def tourist_attraction_detail(request, content_id):
     except (IndexError, ValueError) as e:
         return JsonResponse({'error': 'No data found: ' + str(e)}, status=404)
 
+    # 댓글 처리
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.item_id = content_id
+            comment.author = request.user
+            comment.nickname = request.user.nickname  # 로그인한 사용자의 닉네임 사용
+            comment.save()
+            return redirect('tourist_attraction_detail', content_id=content_id)
+    else:
+        form = CommentForm()
+
+    comments = Comment.objects.filter(item_id=content_id).order_by('-created_at')
+
     context = {
         'item': item,
         'kakao_api_key': kakao_api_key,
+        'comments': comments,
+        'form': form,
     }
 
     return render(request, 'detail.html', context)

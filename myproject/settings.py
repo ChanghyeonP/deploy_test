@@ -13,9 +13,9 @@ SECRET_KEY = 'django-insecure-@1lo*@^rb7!gzisk+end#+)@rp9s%p4ozvjvm$6#ed-^&93fnl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['nurigo.site', 'www.nurigo.site']
+ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://nurigo.site', 'http://nurigo.site']
+CSRF_TRUSTED_ORIGINS = ['https://0610-220-149-11-216.ngrok-free.app']
 
 # HTTPS를 사용하는 경우에만 설정
 CSRF_COOKIE_SECURE = True  # HTTPS를 사용하는 경우 True

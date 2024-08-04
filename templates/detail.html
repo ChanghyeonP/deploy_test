@@ -68,22 +68,36 @@
         </div>
         <p>주소: {{ item.addr1 }}</p>
 
-        <!-- 채팅 섹션 -->
+        <!-- 댓글 섹션 -->
         <div class="card">
-            <div class="card-header">소통 공간</div>
+            <div class="card-header">댓글</div>
             <div class="card-body">
-                <div id="chat-box" style="height: 300px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
-                    <!-- 메시지들이 여기에 추가될 것입니다 -->
-                </div>
-                <div class="input-group">
-                    <input type="text" id="chat-input" class="form-control" placeholder="메시지를 입력하세요">
-                    <button id="send-btn" class="btn btn-primary">전송</button>
-                </div>
+                {% for comment in comments %}
+                    <div class="comment mb-3">
+                        <strong>{{ comment.nickname }}</strong> <br>
+                        <small>{{ comment.created_at }}</small> <br>
+                        {{ comment.text }}
+                    </div>
+                {% empty %}
+                    <p>댓글이 없습니다.</p>
+                {% endfor %}
             </div>
         </div>
-        <a href="{% url 'index' %}" class="btn btn-secondary mt-3">Back to Home</a>
+
+        <!-- 댓글 작성 폼 -->
+        <div class="card mt-3">
+            <div class="card-header">댓글 작성</div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">댓글 달기</button>
+                </form>
+            </div>
+        </div>
+        
     </div>
-    <script src="{% static 'js/mdb.umd.min.js' %}"></script>
+    <script src="{% static 'js/mdb.es.min.js' %}"></script>
     <script>
         // 템플릿 변수를 JSON으로 인코딩하여 JavaScript에서 안전하게 파싱
         var mapData = parseFloat('{{ item.mapx|escapejs }}');
@@ -135,58 +149,6 @@
         }
 
         loadKakaoMap();
-
-        // WebSocket 설정
-        const roomName = encodeURIComponent("{{ item.title }}");
-        const chatSocket = new WebSocket(
-            'wss://' + window.location.host + '/ws/chat/' + roomName + '/'
-        );
-
-        chatSocket.onopen = function(e) {
-            console.log('WebSocket connection opened');
-        };
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            addMessage(data.message, data.nickname, 'server');
-        };
-
-        chatSocket.onclose = function(e) {
-            console.log('WebSocket connection closed');
-        };
-
-        chatSocket.onerror = function(error) {
-            console.log('WebSocket error: ', error);
-        };
-
-        function addMessage(message, nickname, sender='user') {
-            const chatBox = document.getElementById('chat-box');
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message', sender);
-            messageElement.innerHTML = `<strong>${nickname}:</strong> ${message}`;
-            chatBox.appendChild(messageElement);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        document.getElementById('send-btn').addEventListener('click', function() {
-            const chatInput = document.getElementById('chat-input');
-            const message = chatInput.value.trim();
-            if (message && chatSocket.readyState === WebSocket.OPEN) {
-                chatSocket.send(JSON.stringify({
-                    'message': message,
-                    'nickname': '{{ request.user.nickname }}'
-                }));
-                chatInput.value = '';
-            } else {
-                console.error('WebSocket is not open. Unable to send message.');
-            }
-        });
-
-        document.getElementById('chat-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('send-btn').click();
-            }
-        });
     </script>
 </body>
 </html>

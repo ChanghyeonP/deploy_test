@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
+from .views import tourist_attraction_detail
 
 urlpatterns = [
-    path('<int:content_id>/', views.tourist_attraction_detail, name='detail'),
+    path('<int:content_id>/', tourist_attraction_detail, name='tourist_attraction_detail'),
 ]
