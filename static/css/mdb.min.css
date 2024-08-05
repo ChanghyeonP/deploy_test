@@ -2437,7 +2437,7 @@ progress {
     appearance: none;
     background-color: var(--mdb-body-bg);
     background-clip: padding-box;
-    border: var(--mdb-border-width) solid var(--mdb-border-color);
+    border: 1px solid #e0e0e0;
     border-radius: var(--mdb-border-radius);
     box-shadow: var(--mdb-box-shadow-inset);
     transition: all .2s linear
@@ -2614,7 +2614,7 @@ textarea.form-control-lg {
     background-repeat: no-repeat;
     background-position: right .75rem center;
     background-size: 16px 12px;
-    border: var(--mdb-border-width) solid var(--mdb-border-color);
+    border: 1px solid #e0e0e0;
     border-radius: var(--mdb-border-radius);
     box-shadow: var(--mdb-box-shadow-inset);
     transition: all .2s linear
@@ -2704,7 +2704,7 @@ textarea.form-control-lg {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    border: var(--mdb-border-width) solid var(--mdb-border-color);
+    border: 1px solid #e0e0e0;
     print-color-adjust: exact
 }
 
@@ -3066,7 +3066,7 @@ textarea.form-control-lg {
     text-align: center;
     white-space: nowrap;
     background-color: var(--mdb-tertiary-bg);
-    border: var(--mdb-border-width) solid var(--mdb-border-color);
+    border: 1px solid #e0e0e0;
     border-radius: var(--mdb-border-radius)
 }
 
