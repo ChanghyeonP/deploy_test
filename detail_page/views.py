@@ -60,6 +60,6 @@ def tourist_attraction_detail(request, content_id):
 
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
-    if comment.author == request.user:
+    if comment.author == request.user or request.user.is_staff:  # 자기 자신 또는 관리자인 경우만 삭제할 수 있습니다.
         comment.delete()
     return redirect('tourist_attraction_detail', content_id=comment.item_id)

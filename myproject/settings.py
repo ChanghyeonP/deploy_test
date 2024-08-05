@@ -15,7 +15,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://8d97-180-189-105-254.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://f855-220-149-11-225.ngrok-free.app']
 
 # HTTPS를 사용하는 경우에만 설정
 CSRF_COOKIE_SECURE = True  # HTTPS를 사용하는 경우 True
@@ -90,7 +90,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'account',
-        'USER': 'changtest',
+        'USER': 'chang',
         'PASSWORD': 'Rkswl159!',
         'HOST': 'localhost',
         'PORT': '3306',
@@ -157,6 +157,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+MEDIA_URL = ''
+MEDIA_ROOT = os.path.join(BASE_DIR, '')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

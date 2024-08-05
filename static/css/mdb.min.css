@@ -798,7 +798,7 @@ progress {
     padding-left: calc(var(--mdb-gutter-x)*.5);
     margin-right: auto;
     margin-left: auto;
-    margin-bottom: 20px;
+    
 }
 
 @media(min-width: 576px) {

@@ -1,4 +1,4 @@
-/*!
+mdb-gutt/*!
 * MDB5
 * Version: FREE 7.1.0
 *
@@ -797,8 +797,7 @@ progress {
     padding-right: calc(var(--mdb-gutter-x)*.5);
     padding-left: calc(var(--mdb-gutter-x)*.5);
     margin-right: auto;
-    margin-left: auto;
-    margin-bottom: 20px;
+    margin-left: auto; 
 }
 
 @media(min-width: 576px) {

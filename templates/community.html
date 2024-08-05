@@ -12,18 +12,37 @@
     <!-- MDB -->
     <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <style>
+        .navbar-toggler {
+            margin-right: auto; /* Align to the left */
+        }
+        .navbar-collapse {
+            justify-content: center;
+        }
+        .navbar-nav {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            margin-bottom: 25px;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
-        <div class="container-fluid">
+        <div class="container-fluid" style="margin-bottom: 0px;">
             <img src="" height="16" alt="" loading="lazy" style="margin-top: -3px;">
             <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01"
                 aria-controls="navbarExample01" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarExample01">
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav">
                     <li class="nav-item active">
                         <a class="nav-link" aria-current="page" href="{% url 'index' %}">Home</a>
                     </li>
@@ -40,23 +59,25 @@
     <main class="my-5">
         <div class="container">
             <!-- 게시물 작성 폼 -->
-            <h4 class="custom-margin-top" style="margin-bottom: 25px; margin-top: 20px;"><strong>게시물 작성</strong></h4>
-            <form method="post" action="{% url 'community' %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="title">제목</label>
-                    <input type="text" class="form-control" id="title" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="content">내용</label>
-                    <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="image">이미지</label>
-                    <input type="file" class="form-control-file" id="image" name="image">
-                </div>
-                <button type="submit" class="btn btn-primary mt-3">게시물 올리기</button>
-            </form>
+            <div class="form-box">
+                <h4 class="custom-margin-top"><strong>게시물 작성</strong></h4>
+                <form method="post" action="{% url 'community' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="title">제목</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="content">내용</label>
+                        <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="image">이미지</label>
+                        <input type="file" class="form-control-file" id="image" name="image">
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">게시물 올리기</button>
+                </form>
+            </div>
             <!-- 게시물 목록 -->
             <h4 class="custom-margin-top" style="margin-bottom: 25px; margin-top: 20px;"><strong>게시물 목록</strong></h4>
             <div class="row">
@@ -75,6 +96,9 @@
                             <h5 class="card-title">{{ post.title }}</h5>
                             <p class="card-text">{{ post.content }}</p>
                             <p class="card-text"><small class="text-muted">{{ post.created_at }}</small></p>
+                            {% if request.user == post.author or request.user.is_staff %}
+                            <a href="{% url 'delete_post' post.id %}" class="btn btn-danger" role="button">Delete</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -82,10 +106,18 @@
             </div>
         </div>
     </main>
-    <!-- Main Layout -->
-
     <!-- MDB -->
-    <script type="text/javascript" src="{% static 'js/mdb.umd.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/mdb.es.min.js' %}"></script>
+    <script type="text/javascript">
+        // Initialize MDB elements
+        document.addEventListener('DOMContentLoaded', function () {
+            var toggler = document.querySelector('.navbar-toggler');
+            var collapse = document.querySelector('.navbar-collapse');
+
+            toggler.addEventListener('click', function () {
+                collapse.classList.toggle('show');
+            });
+        });
+    </script>
 </body>
 </html>
